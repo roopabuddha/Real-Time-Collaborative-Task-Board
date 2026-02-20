@@ -1,31 +1,21 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.io = void 0;
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const http_1 = __importDefault(require("http"));
-const socket_io_1 = require("socket.io");
-const dotenv_1 = __importDefault(require("dotenv"));
-const tasks_1 = __importDefault(require("./routes/tasks"));
-dotenv_1.default.config();
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-app.use("/api/tasks", tasks_1.default);
-const httpServer = http_1.default.createServer(app);
-exports.io = new socket_io_1.Server(httpServer, {
-    cors: { origin: "*" },
-});
-exports.io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
-    socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.id);
+exports.editTask = editTask;
+const prisma_1 = require("../db/prisma");
+const conflictResolver_1 = require("../services/conflictResolver");
+async function editTask(params) {
+    const { id, title, description, incomingVersion } = params;
+    const existing = await prisma_1.prisma.task.findUnique({ where: { id } });
+    if (!existing)
+        return null;
+    // Check version for concurrent updates
+    if (!conflictResolver_1.ConflictResolver.resolveMoveWinner(existing, incomingVersion, new Date())) {
+        throw new Error("Edit rejected due to concurrent modification");
+    }
+    const dataToUpdate = conflictResolver_1.ConflictResolver.mergeEdit(existing, { title, description });
+    // Increment version
+    return prisma_1.prisma.task.update({
+        where: { id },
+        data: { ...dataToUpdate, version: existing.version + 1 },
     });
-});
-const PORT = process.env.PORT || 4000;
-httpServer.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+}
