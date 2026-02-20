@@ -11,7 +11,6 @@ import {
   DragStartEvent,
   DragEndEvent,
 } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useTaskStore } from "../store/taskStore";
 import Column from "./Column";
 import { Task } from "../types";

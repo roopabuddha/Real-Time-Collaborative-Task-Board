@@ -34,7 +34,6 @@ export default function DraggableTask({
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging,
   } = useSortable({ id: task.id });
 

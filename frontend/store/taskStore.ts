@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { Task } from "../types";
 import { socket } from "../websocket/socket";
-import { enqueue, getQueueLength } from "./offlineQueue";
+import { enqueue } from "./offlineQueue";
 import toast from "react-hot-toast";
 
 interface TaskState {
