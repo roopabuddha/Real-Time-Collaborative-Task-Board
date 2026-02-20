@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15
+    container_name: kanban-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: kanban
+      POSTGRES_USER: kanban
+      POSTGRES_PASSWORD: kanbanpassword
+    volumes:
+      - shopup-assignment_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  shopup-assignment_postgres_data:
