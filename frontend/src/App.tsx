@@ -1,6 +1,6 @@
 import Board from "../board/Board";
 import PresenceBar from "../board/PresenceBar";
-import OfflineBanner from "../board/OfflineBanner";
+import OfflineBanner from "../board/temp";
 import DndErrorBoundary from "../board/DndErrorBoundary";
 import { useSocketStore } from "../store/socketStore";
 import { useEffect, useState } from "react";
